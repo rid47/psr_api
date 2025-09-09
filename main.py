@@ -89,17 +89,22 @@ def verify_tax_return_using_api(file_path):
 setup_logger()
 
 while True:
-    file_path, file_id = get_file_path(status="Processing", rpa_type="PSR")
-    if file_path:
-        try:
-            verify_tax_return_using_api(file_path)
-            update_file_status(file_id=file_id, status='Complete', remarks='')
-        except Exception as e:
-            print(f"Exception occurred: {e}")
-            logging.error(f"Exception occurred: {e}")
-            
-            update_file_status(file_id=file_id, status='Error', remarks=f'{e}')
-    else:
-        print("No file found to process")
-        logging.info("No file found to process")
-        time.sleep(10)
+    try:
+        file_path, file_id = get_file_path(status="Processing", rpa_type="PSR")
+        if file_path:
+            try:
+                verify_tax_return_using_api(file_path)
+                update_file_status(file_id=file_id, status='Complete', remarks='')
+            except Exception as e:
+                print(f"Exception occurred: {e}")
+                logging.error(f"Exception occurred: {e}")
+                
+                update_file_status(file_id=file_id, status='Error', remarks=f'{e}')
+        else:
+            print("No file found to process")
+            logging.info("No file found to process")
+            time.sleep(10)
+    except Exception as e:
+        print(f"Exception occured in get file api call: {e}")
+        logging.error(f"Exception occurred in get file api call:{e}")
+        time.sleep(30)
